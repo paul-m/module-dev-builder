@@ -7,7 +7,10 @@
 class RoboFile extends \Robo\Tasks
 {
 
-  const STABLE_DRUPAL_BRANCH = '8.6.x';
+  const STABLE_DRUPAL_BRANCH = '7.x';
+  const DEVELOPMENT_MODULE = 'bean';
+  const DEVELOPMENT_MODULE_BRANCH = '7.x-1.x';
+  const COMPOSER_INSTALL = FALSE;
 
   public function build($opts = ['install|i' => false]) {
     // Repo.
@@ -20,29 +23,32 @@ class RoboFile extends \Robo\Tasks
       ->run();
 
     $this->taskGitStack()
-      ->cloneRepo('git@git.drupal.org:project/examples.git', 'examples', '8.x-1.x')
+      ->cloneRepo('git@git.drupal.org:project/' . static::DEVELOPMENT_MODULE . '.git', 'bean', static::DEVELOPMENT_MODULE_BRANCH)
       ->run();
     $this->taskGitStack()
-      ->dir('examples')
-      ->pull('origin', '8.x-1.x')
+      ->dir(static::DEVELOPMENT_MODULE)
+      ->pull('origin', static::DEVELOPMENT_MODULE_BRANCH)
       ->run();
 
     // Symbolic link the examples repo within Drupal.
-    $this->_exec('ln -sf $(pwd)/examples $(pwd)/drupal/modules/');
+    $this->_exec('ln -sf $(pwd)/' . static::DEVELOPMENT_MODULE . ' $(pwd)/drupal/sites/all/modules/');
 
     // Composer.
-    $this->taskComposerInstall()
-      ->dir('drupal')
-      ->run();
-    $this->taskExec('composer run-script drupal-phpunit-upgrade')
-      ->dir('drupal')
-      ->run();
-    $this->taskComposerRequire()
-      ->dir('drupal')
-      ->dependency('digipolisgent/robo-drupal-console', '@stable')
-      ->run();
+    if (static::COMPOSER_INSTALL) {
+      $this->taskComposerInstall()
+        ->dir('drupal')
+        ->run();
+      $this->taskExec('composer run-script drupal-phpunit-upgrade')
+        ->dir('drupal')
+        ->run();
+      $this->taskComposerRequire()
+        ->dir('drupal')
+        ->dependency('digipolisgent/robo-drupal-console', '@stable')
+        ->run();
+    }
 
     // Install.
+    // @todo Use drush with d7.
     if ($opts['install']) {
       $this->taskExec('./vendor/bin/drupal site:install standard --db-type="mysql" --db-host="127.0.0.1" --db-name="d8" --db-user="root" --db-pass="root" --db-port="8889" --site-name="foo" --site-mail="admin@mile23.com" --account-name=admin --account-mail="paul@mile23.com" --account-pass="admin" --db-prefix="examples_" --force --no-interaction')
         ->dir('drupal')
