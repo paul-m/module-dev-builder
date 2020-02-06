@@ -1,8 +1,9 @@
 {
+  "name": "mile23/module-dev-builder",
   "config": {
     "bin-dir": "bin"
   },
-    "require": {
-        "consolidation/robo": "@stable"
-    }
+  "require": {
+    "consolidation/robo": "@stable"
+  }
 }
