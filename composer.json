@@ -1,0 +1,8 @@
+{
+  "config": {
+    "bin-dir": "bin"
+  },
+    "require": {
+        "consolidation/robo": "@stable"
+    }
+}
