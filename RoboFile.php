@@ -30,7 +30,7 @@ class RoboFile extends \Robo\Tasks
       ->pull('origin', static::DEVELOPMENT_MODULE_BRANCH)
       ->run();
 
-    // Symbolic link the examples repo within Drupal.
+    // Symbolic link the contrib repo within Drupal.
     $this->_exec('ln -sf $(pwd)/' . static::DEVELOPMENT_MODULE . ' $(pwd)/drupal/sites/all/modules/');
 
     // Composer.
@@ -50,7 +50,7 @@ class RoboFile extends \Robo\Tasks
     // Install.
     // @todo Use drush with d7.
     if ($opts['install']) {
-      $this->taskExec('./vendor/bin/drupal site:install standard --db-type="mysql" --db-host="127.0.0.1" --db-name="d8" --db-user="root" --db-pass="root" --db-port="8889" --site-name="foo" --site-mail="admin@mile23.com" --account-name=admin --account-mail="paul@mile23.com" --account-pass="admin" --db-prefix="examples_" --force --no-interaction')
+      $this->taskExec('./vendor/bin/drupal site:install standard --db-type="mysql" --db-host="127.0.0.1" --db-name="d8" --db-user="root" --db-pass="root" --db-port="8889" --site-name="foo" --site-mail="admin@mile23.com" --account-name=admin --account-mail="some@example.com" --account-pass="admin" --db-prefix="dev_" --force --no-interaction')
         ->dir('drupal')
         ->run();
       $this->taskExec('./vendor/bin/drupal site:status')
